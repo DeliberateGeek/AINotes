@@ -32,4 +32,12 @@ module mainFunctionAppServicePlan '../resources/appserviceplan.bicep' = {
   }
 }
 
-
+module mainFunctionApp '../resources/functionapp.bicep' = {
+  name: '${functionAppName}-deployment'
+  params: {
+    location: location
+    name: functionAppName
+    tags: tags
+    appServicePlanId: mainFunctionAppServicePlan.outputs.id
+  }
+}

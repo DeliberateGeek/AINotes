@@ -5,15 +5,21 @@ param tags object = {}
 @allowed([ 'Hot', 'Cool', 'Premium' ])
 param accessTier string = 'Hot'
 param allowBlobPublicAccess bool = true
-param allowCrossTenantReplication bool = true
-param allowSharedKeyAccess bool = true
 param defaultToOAuthAuthentication bool = false
 param deleteRetentionPolicy object = {}
 param kind string = 'StorageV2'
 param minimumTlsVersion string = 'TLS1_2'
 @allowed([ 'Enabled', 'Disabled' ])
 param publicNetworkAccess string = 'Enabled'
-param sku object = { name: 'Standard_LRS' }
+param sku object = { 
+  name: 'Standard_LRS'
+  tier: 'Standard'
+}
+
+param includeBlobServices bool = true
+param includeFileServices bool = true
+param includeQueueServices bool = true
+param includeTableServices bool = true
 
 param containers array = []
 
@@ -26,9 +32,20 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   properties: {
     accessTier: accessTier
     allowBlobPublicAccess: allowBlobPublicAccess
-    allowCrossTenantReplication: allowCrossTenantReplication
-    allowSharedKeyAccess: allowSharedKeyAccess
     defaultToOAuthAuthentication: defaultToOAuthAuthentication
+    encryption: {
+      services: {
+        file: {
+          keyType: 'Account'
+          enabled: true
+        }
+        blob: {
+          keyType: 'Account'
+          enabled: true
+        }
+      }
+      keySource: 'Microsoft.Storage'
+    }
     minimumTlsVersion: minimumTlsVersion
     networkAcls: {
       bypass: 'AzureServices'
@@ -39,17 +56,32 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     supportsHttpsTrafficOnly: true
   }
 
-  resource blobServices 'blobServices' = if (!empty(containers)) {
+  resource blobServices 'blobServices' = if (includeBlobServices) {    
     name: 'default'
     properties: {
       deleteRetentionPolicy: deleteRetentionPolicy
     }
-    resource container 'containers' = [for container in containers: {
+    resource container 'containers' = [for container in containers: if(!empty(containers)) {
       name: container.name
       properties: {
         publicAccess: contains(container, 'publicAccess') ? container.publicAccess : 'None'
       }
     }]
+  }
+
+  resource fileServices 'fileServices' = if (includeFileServices) {
+    name: 'default'
+    properties: {
+      shareDeleteRetentionPolicy: deleteRetentionPolicy
+    }
+  }
+
+  resource queueServices 'queueServices' = if (includeQueueServices) {
+    name: 'default'
+  }
+
+  resource tableServices 'tableServices' = if (includeTableServices) {
+    name: 'default'
   }
 }
 
