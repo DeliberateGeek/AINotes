@@ -24,30 +24,37 @@ var sharedRgName = toLower('${abbrs.resourcesResourceGroups}-${projectName}-shar
 var mainRgName = toLower('${abbrs.resourcesResourceGroups}-${projectName}-${mainModuleName}-${environmentName}')
 
 var mainStorageAccountName = toLower('${abbrs.storageStorageAccounts}${projectName}${mainModuleName}${environmentName}')
-var mainFunctionStorageContainerName = 'function-storage'
+var mainFunctionWebjobsHostsContainerName = 'azure-webjobs-hosts'
+var mainFunctionWebjobsSecretsContainerName = 'azure-webjobs-secrets'
 var mainFunctionAudioFilesContainerName = 'audio-files'
 var mainFunctionTranscriptionsContainerName = 'transcriptions'
 var mainFunctionSummariesContainerName = 'summaries'
+var mainFunctionFileShareName = toLower('${projectName}-${mainModuleName}-functionshare-${environmentName}')
 
 var mainAppServicePlanName = toLower('${abbrs.webServerFarms}-${projectName}-${mainModuleName}-${environmentName}')
 var mainFunctionAppName = toLower('${abbrs.webSitesFunctions}-${projectName}-${mainModuleName}-${environmentName}')
 
 var containers = [
   {
-    name: mainFunctionStorageContainerName
-    publicAccess: 'None'
+    name: mainFunctionWebjobsHostsContainerName
+  }
+  {
+    name: mainFunctionWebjobsSecretsContainerName
   }
   {
     name: mainFunctionAudioFilesContainerName
-    publicAccess: 'None'
   }
   {
     name: mainFunctionTranscriptionsContainerName
-    publicAccess: 'None'
   }
   {
     name: mainFunctionSummariesContainerName
-    publicAccess: 'None'
+  }
+]
+
+var fileShares = [
+  {
+    name: mainFunctionFileShareName
   }
 ]
 
@@ -71,9 +78,11 @@ module mainResources 'modules/mainResources.bicep' = {
   params:{
     appServicePlanName: mainAppServicePlanName
     functionAppName: mainFunctionAppName
+    functionWebsiteContentShareName: mainFunctionFileShareName
     location: location
     storageAccountName: mainStorageAccountName
     storageBlobContainers: containers
+    storageFileShares: fileShares
     tags: tags
   }
 }

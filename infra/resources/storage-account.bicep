@@ -5,6 +5,7 @@ param tags object = {}
 @allowed([ 'Hot', 'Cool', 'Premium' ])
 param accessTier string = 'Hot'
 param allowBlobPublicAccess bool = true
+param allowSharedKeyAccess bool = true //Allow Shared Key access to the storage account for functions
 param defaultToOAuthAuthentication bool = false
 param deleteRetentionPolicy object = {}
 param kind string = 'StorageV2'
@@ -22,6 +23,7 @@ param includeQueueServices bool = true
 param includeTableServices bool = true
 
 param containers array = []
+param shares array = []
 
 resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: name
@@ -32,6 +34,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   properties: {
     accessTier: accessTier
     allowBlobPublicAccess: allowBlobPublicAccess
+    allowSharedKeyAccess: allowSharedKeyAccess
     defaultToOAuthAuthentication: defaultToOAuthAuthentication
     encryption: {
       services: {
@@ -64,7 +67,12 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     resource container 'containers' = [for container in containers: if(!empty(containers)) {
       name: container.name
       properties: {
-        publicAccess: contains(container, 'publicAccess') ? container.publicAccess : 'None'
+        immutableStorageWithVersioning: {
+          enabled: false
+        }
+        defaultEncryptionScope: '$account-encryption-key'
+        denyEncryptionScopeOverride: false
+        publicAccess: 'None'
       }
     }]
   }
@@ -74,6 +82,14 @@ resource storage 'Microsoft.Storage/storageAccounts@2022-09-01' = {
     properties: {
       shareDeleteRetentionPolicy: deleteRetentionPolicy
     }
+    resource share 'shares' = [for share in shares: if(!empty(shares)) {
+      name: share.name
+      properties: {
+        accessTier: 'TransactionOptimized'
+        shareQuota: 5120
+        enabledProtocols: 'SMB'
+      }
+    }]
   }
 
   resource queueServices 'queueServices' = if (includeQueueServices) {

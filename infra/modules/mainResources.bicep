@@ -3,6 +3,7 @@ param location string = resourceGroup().location
 param tags object
 param storageAccountName string
 param storageBlobContainers array
+param storageFileShares array
 param storageDeleteRetentionPolicy object = { 
   enabled: true
   days: 5
@@ -10,6 +11,7 @@ param storageDeleteRetentionPolicy object = {
 
 param appServicePlanName string
 param functionAppName string
+param functionWebsiteContentShareName string
 
 
 module mainStorageAccount '../resources/storage-account.bicep' = {
@@ -20,6 +22,7 @@ module mainStorageAccount '../resources/storage-account.bicep' = {
     tags: tags
     deleteRetentionPolicy: storageDeleteRetentionPolicy
     containers: storageBlobContainers
+    shares: storageFileShares
   }
 }
 
@@ -39,5 +42,7 @@ module mainFunctionApp '../resources/functionapp.bicep' = {
     name: functionAppName
     tags: tags
     appServicePlanId: mainFunctionAppServicePlan.outputs.id
+    storageAccountName: mainStorageAccount.outputs.name
+    functionWebsiteContentShareName: functionWebsiteContentShareName
   }
 }
