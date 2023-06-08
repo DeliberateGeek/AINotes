@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - features/**
 permissions:
   id-token: write
   contents: read
