@@ -23,7 +23,14 @@ var mainModuleName = 'main'
 var sharedRgName = toLower('${abbrs.resourcesResourceGroups}-${projectName}-shared-${environmentName}')
 var mainRgName = toLower('${abbrs.resourcesResourceGroups}-${projectName}-${mainModuleName}-${environmentName}')
 
-var mainStorageAccountName = toLower('${abbrs.storageStorageAccounts}${projectName}${mainModuleName}${environmentName}')
+// Used to get a unique string for the storage account name to avoid collisions. Storage accounts have to be unique across all of Azure.
+// I ran into a collision with the storage account name because I was deploying to different subscriptions with the same project name, etc...
+var randomSuffixCore = toLower(uniqueString(subscription().subscriptionId, projectName, environmentName, location))
+var mainStorageAccountNameRoot = toLower('${abbrs.storageStorageAccounts}${projectName}${mainModuleName}${environmentName}')
+var storageSuffixlength = 24 - length(mainStorageAccountNameRoot)
+var mainStorageAccountName = '${mainStorageAccountNameRoot}${substring(randomSuffixCore, 0, storageSuffixlength)}'
+
+
 var mainFunctionWebjobsHostsContainerName = 'azure-webjobs-hosts'
 var mainFunctionWebjobsSecretsContainerName = 'azure-webjobs-secrets'
 var mainFunctionAudioFilesContainerName = 'audio-files'
