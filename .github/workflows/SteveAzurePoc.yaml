@@ -25,7 +25,9 @@ jobs:
           enable-AzPSSession: true
       
       - name: 'Get resource group'
-        uses: azure/cli@v1
+        uses: azure/powershell@v1
         with:
           inlineScript: |
-            az group list -o table          
+            az group list -o table
+          azPSVersion: "latest"
+          
