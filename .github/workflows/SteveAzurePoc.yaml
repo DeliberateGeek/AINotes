@@ -25,10 +25,7 @@ jobs:
           enable-AzPSSession: true
       
       - name: 'Get resource group'
-        uses: azure/powershell@v1
+        uses: azure/cli@v1
         with:
           inlineScript: |
-            $resourceGroup = Get-AzResourceGroup
-            Write-Host "Resource Group: $resourceGroup"
-          azPSVersion: "latest"
-          
+            az group list -o table          
