@@ -10,7 +10,7 @@ permissions:
   id-token: write
   contents: read
 jobs:
-  windows-latest:
+  SteveAzureSandboxDeploy:
     runs-on: ubuntu-latest
     environment: SteveAzureSandbox
     steps:
@@ -34,8 +34,7 @@ jobs:
           parameters: 'environmentName=dev'
       
       - name: 'Get resource group'
-        uses: azure/powershell@v1
+        uses: azure/cli@v1
         with:
           inlineScript: |
             az group list -o table
-          azPSVersion: "latest"
