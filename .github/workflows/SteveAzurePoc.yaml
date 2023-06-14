@@ -23,7 +23,11 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
-
+      - name: 'Lint Bicep'
+        uses: azure/cli@1
+        with:
+          inlineScript: |
+            az bicep build --file ./infra/main.bicep
       - name: 'Deploy infrastructure'
         uses: azure/arm-deploy@v1
         with:
