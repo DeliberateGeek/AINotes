@@ -20,9 +20,10 @@ jobs:
         uses: azure/cli@v1
         with:
           inlineScript: |
-            az bicep build --file deploy/main.bicep      
+            az bicep build --file ./infra/main.bicep      
   SteveAzureSandboxDeploy:
     runs-on: ubuntu-latest
+    needs: Lint
     environment: SteveAzureSandbox
     steps:
       - name: Checkout
