@@ -10,19 +10,23 @@ permissions:
   id-token: write
   contents: read
 jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    environment: SteveAzureSandbox
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: "Build bicep"
+        uses: azure/cli@v1
+        with:
+          inlineScript: |
+          az bicep build --file deploy/main.bicep      
   SteveAzureSandboxDeploy:
     runs-on: ubuntu-latest
     environment: SteveAzureSandbox
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: 'Lint Bicep'
-        uses: azure/cli@v1
-        with:
-          inlineScript: |
-            az bicep build --file ./infra/main.bicep
-
       - name: OIDC Login
         uses: azure/login@v1
         with:
@@ -30,7 +34,6 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           enable-AzPSSession: true
-
       - name: 'Deploy infrastructure'
         uses: azure/arm-deploy@v1
         with:
@@ -39,7 +42,6 @@ jobs:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           template: ./infra/main.bicep
           parameters: 'environmentName=dev'
-      
       - name: 'Get resource group'
         uses: azure/cli@v1
         with:
