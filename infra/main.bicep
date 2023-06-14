@@ -15,7 +15,7 @@ param environmentName string
 @minLength(1)
 @allowed(['eastus','southcentralus'])
 @description('Primary location for all resources')
-param location string = 'eaus'
+param location string = 'eastus'
 
 var abbrs = loadJsonContent('abbreviations.json')
 
