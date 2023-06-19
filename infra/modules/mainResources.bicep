@@ -47,5 +47,5 @@ module mainFunctionApp '../resources/functionapp.bicep' = {
   }
 }
 
-output functionAppPrincipalId string = mainFunctionApp.outputs.identityPrincipalId
-output functionAppName string = mainFunctionApp.outputs.name
+output mainFunctionAppPrincipalId string = mainFunctionApp.outputs.identityPrincipalId
+output mainFunctionAppName string = mainFunctionApp.outputs.name
