@@ -41,6 +41,8 @@ var mainFunctionFileShareName = toLower('${projectName}-${mainModuleName}-functi
 var mainAppServicePlanName = toLower('${abbrs.webServerFarms}-${projectName}-${mainModuleName}-${environmentName}')
 var mainFunctionAppName = toLower('${abbrs.webSitesFunctions}-${projectName}-${mainModuleName}-${environmentName}')
 
+var sharedKeyVaultName = toLower('${abbrs.keyVaultVaults}-${projectName}-shared-${environmentName}')
+
 var containers = [
   {
     name: mainFunctionWebjobsHostsContainerName
@@ -90,6 +92,16 @@ module mainResources 'modules/mainResources.bicep' = {
     storageAccountName: mainStorageAccountName
     storageBlobContainers: containers
     storageFileShares: fileShares
+    tags: tags
+  }
+}
+
+module sharedResources 'modules/sharedResources.bicep' = {
+  name: 'sharedResources-deployment'
+  scope: sharedRg
+  params:{
+    keyVaultName: sharedKeyVaultName
+    location: location
     tags: tags
   }
 }
