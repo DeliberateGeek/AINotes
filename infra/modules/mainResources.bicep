@@ -46,3 +46,5 @@ module mainFunctionApp '../resources/functionapp.bicep' = {
     functionWebsiteContentShareName: functionWebsiteContentShareName
   }
 }
+
+output functionAppPrincipalId string = mainFunctionApp.outputs.identityPrincipalId

@@ -100,6 +100,7 @@ module sharedResources 'modules/sharedResources.bicep' = {
   name: 'sharedResources-deployment'
   scope: sharedRg
   params:{
+    functionAppPrincipalId: mainResources.outputs.functionAppPrincipalId
     keyVaultName: sharedKeyVaultName
     location: location
     tags: tags
